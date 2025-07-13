@@ -1,0 +1,78 @@
+.app {
+  width: 100%;
+  height: 100vh;
+
+  display: flex;
+}
+
+.menu {
+  width: 25%;
+  height: 100%;
+
+  padding: 0px 15px;
+}
+
+.canva {
+  width: 75%;
+  height: 100%;
+}
+
+form {
+  margin-top: 20px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+form header {
+  width: 100%;
+
+  margin-bottom: 50px;
+}
+
+form header input#file-upload-button {
+  color: red !important;
+}
+
+/* form h2 {
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+} */
+
+/* form label {
+  color: rgb(212, 212, 212);
+  display: flex;
+  gap: 20px;
+} */
+
+/* form .form-group {
+  display: flex;
+  flex-direction: column;
+} */
+
+/* form .form-group label {
+  margin-top: 12px;
+} */
+
+/* form .form-group input {
+  border: 0;
+  padding: 8px 12px;
+  border-radius: 2px;
+} */
+
+form .button-row {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+
+  margin-top: 24px;
+}
+
+/* form .button-row button {
+  padding: 8px 24px;
+  background-color: #0077b6;
+  color: white;
+  border: 0;
+  border-radius: 4px;
+} */
