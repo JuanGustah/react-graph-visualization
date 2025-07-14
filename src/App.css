@@ -12,9 +12,18 @@
   padding: 0px 15px;
 }
 
-.canva {
+.canva-container {
   width: 75%;
   height: 100%;
+}
+
+.canva {
+  width: 100%;
+  height: 100%;
+}
+
+.canva-loading {
+  cursor: not-allowed;
 }
 
 form {
