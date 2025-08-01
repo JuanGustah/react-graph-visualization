@@ -1,4 +1,5 @@
 export enum NodeTypes {
-  ROOT = "MAIN_NODE",
-  LEAF = "LEAF",
+  HOLDER = "HOLDER",
+  OD = "OD",
+  DIARY_TRANSACTIONS = "DIARY_TRANSACTIONS"
 }

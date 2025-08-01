@@ -215,7 +215,7 @@ function App() {
           y: 0.1,
           size: 4,
           data: {
-            nodeType: NodeTypes.ROOT,
+            nodeType: NodeTypes.HOLDER,
             cpfCnpj: mainNodeIdx,
             names: mainNode.names,
             transactions: mainNode.data,
@@ -226,7 +226,7 @@ function App() {
           return {
             ...attr,
             color: "#15616d",
-            nodeType: NodeTypes.ROOT,
+            nodeType: NodeTypes.HOLDER,
             data: {
               ...attr.data,
               cpfCnpj: mainNodeIdx,
@@ -236,7 +236,7 @@ function App() {
         });
       }
 
-      if (visualizationType === "actors") {
+      if (visualizationType === "od") {
         const actors = mainNodesHash[mainNodeIdx].odIndex;
 
         Object.entries(actors).forEach((transactionIndex: any) => {
@@ -262,7 +262,7 @@ function App() {
               size: 3,
               data: {
                 cpfCnpj: transactionKey,
-                nodeType: NodeTypes.LEAF,
+                nodeType: NodeTypes.OD,
                 transactions: transactions,
               },
             });
@@ -289,31 +289,35 @@ function App() {
         });
       }
 
-      // if (visualizationType === "transactions") {
-      //   const diaryTransactions =
-      //     mainNodesHash[mainNodeIdx].diaryTransactionIndex;
+      if (visualizationType === "diaryTransactions") {
+        const diaryTransactions =
+          mainNodesHash[mainNodeIdx].diaryTransactionIndex;
 
-      //   Object.entries(diaryTransactions).forEach((transactionIndex: any) => {
-      //     const date = transactionIndex[0];
-      //     const transactionObject = transactionIndex[1];
-      //     const transactionGraphKey = `${mainNodeIdx}${date}`;
+        Object.entries(diaryTransactions).forEach((transactionIndex: any) => {
+          const date = transactionIndex[0];
+          const transactionObject = transactionIndex[1];
+          const transactionGraphKey = `${mainNodeIdx}${date}`;
 
-      //     const { transactions } = transactionObject;
+          const { transactions } = transactionObject;
 
-      //     fullGraph.current.addNode(transactionGraphKey, {
-      //       label: date,
-      //       color: "#70757a",
-      //       x: 0.1,
-      //       y: 0.1,
-      //       data: { nodeType: NodeTypes.LEAF, transactions: transactions },
-      //     });
+          fullGraph.current.addNode(transactionGraphKey, {
+            label: date,
+            color: "#70757a",
+            x: 0.1,
+            y: 0.1,
+            data: { 
+              date: date,
+              nodeType: NodeTypes.DIARY_TRANSACTIONS, 
+              transactions: transactions 
+            },
+          });
 
-      //     fullGraph.current.addEdge(mainNodeIdx, transactionGraphKey, {
-      //       color: "#adb5bd",
-      //       weight: 1,
-      //     });
-      //   });
-      // }
+          fullGraph.current.addEdge(mainNodeIdx, transactionGraphKey, {
+            color: "#adb5bd",
+            weight: 1,
+          });
+        });
+      }
     });
 
     console.log("END MAIN GRAPH");
@@ -340,10 +344,10 @@ function App() {
       const hasTransactionsToAnalysis = transactionsToAnalysis.length > 0;
 
       if (hasTransactionsToAnalysis) {
-        if (attrs.data?.nodeType == NodeTypes.ROOT) {
+        if (attrs.data?.nodeType == NodeTypes.HOLDER) {
           nodeNames = attrs.data.names;
         } else {
-          nodeNames = transactionsToAnalysis.reduce((acc, transaction) => {
+          nodeNames = transactionsToAnalysis.reduce((acc:any, transaction:any) => {
             if (!acc.includes(transaction["NOME_PESSOA_OD"])) {
               return [...acc, transaction["NOME_PESSOA_OD"]];
             }
@@ -356,7 +360,7 @@ function App() {
 
       if (activateIVNFilters) {
         //byPass para sempre exibir o no de origem
-        if (attrs.data?.nodeType !== NodeTypes.ROOT) {
+        if (attrs.data?.nodeType !== NodeTypes.HOLDER) {
           // if (
           //   transactionsToAnalysis[0]?.["CPF_CNPJ_OD"] &&
           //   transactionsToAnalysis[0]?.["CPF_CNPJ_OD"] !== "0"
@@ -513,9 +517,9 @@ function App() {
                     <SelectValue placeholder="Selecionar" className="0" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="actors">Atores</SelectItem>
-                    <SelectItem value="transactions" disabled={true}>
-                      Transações
+                    <SelectItem value="od">Titular - OD</SelectItem>
+                    <SelectItem value="diaryTransactions">
+                      Titular - Transações Diárias
                     </SelectItem>
                   </SelectContent>
                 </Select>
