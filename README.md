@@ -4,6 +4,11 @@
 
 Proof of concept (POC) da visualização de grafos e tipologias em uma rede.
 
+## Acesso:
+```
+https://juangustah.github.io/react-graph-visualization/
+```
+
 ## Como rodar:
 
 ### 1. Nodejs
