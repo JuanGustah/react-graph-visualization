@@ -43,7 +43,7 @@ export default function NodeModal({ node }: InodeModal) {
     cpfCnpj = node.cpfCnpj || '';
     date =  node.date || '';
     nodeType = node.nodeType;
-    names = node.names;
+    names = node.names?.length ? node.names : [];
     degreeCentrality = node.degreeCentrality || 0;
     betweennessCentrality = node.betweennessCentrality || 0;
     closenessCentrality = node.closenessCentrality || 0;

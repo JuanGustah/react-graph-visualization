@@ -226,9 +226,10 @@ function App() {
           return {
             ...attr,
             color: "#15616d",
-            nodeType: NodeTypes.HOLDER,
+            size: 4,
             data: {
               ...attr.data,
+              nodeType: NodeTypes.HOLDER,
               cpfCnpj: mainNodeIdx,
               transactions: [...attr.data.transactions, ...mainNode.data],
             },
@@ -326,6 +327,8 @@ function App() {
   function generateViewGraph() {
     displayGraph.current.clear();
 
+    let edgesSet: any = {};
+
     console.log("START VIEW GRAPH");
     fullGraph.current.forEachNode((node, attrs) => {
       // if (attrs.data.type === NodeTypes.ROOT)
@@ -361,10 +364,6 @@ function App() {
       if (activateIVNFilters) {
         //byPass para sempre exibir o no de origem
         if (attrs.data?.nodeType !== NodeTypes.HOLDER) {
-          // if (
-          //   transactionsToAnalysis[0]?.["CPF_CNPJ_OD"] &&
-          //   transactionsToAnalysis[0]?.["CPF_CNPJ_OD"] !== "0"
-          // ) {
           const holders: any = [];
           transactionsToAnalysis.forEach((transaction: any) => {
             if (!holders.includes(transaction["CPF_CNPJ_TITULAR"]))
@@ -375,13 +374,46 @@ function App() {
             holders.length >= differentAccountsTolerance;
 
           criteria = criteria && hasManyOrEqualOriginsTransactionsThanTolerance;
-          // } else {
-          //   criteria = false;
-          // }
+        }else{ //nesse momento o IVN só leva em consideração os tipos HOLDER e OD
+          transactionsToAnalysis = transactionsToAnalysis.filter((transaction:any)=>{
+            const odCpfCnpj = transaction['CPF_CNPJ_OD'];
+            
+            if(attrs.cpfCnpj === odCpfCnpj) return true;
+
+            const odData = fullGraph.current.getNodeAttribute(odCpfCnpj,'data');
+
+            const holders: any = [];
+            //fonte de bug: transactions aqui está sem os filtros de CNAB(e outros filtros que surgirem), deve ser adicionado
+            odData.transactions.forEach((transaction: any) => {
+              if (!holders.includes(transaction["CPF_CNPJ_TITULAR"]))
+                holders.push(transaction["CPF_CNPJ_TITULAR"]);
+            });
+
+            const hasManyOrEqualOriginsTransactionsThanTolerance =
+              holders.length >= differentAccountsTolerance;
+
+            return hasManyOrEqualOriginsTransactionsThanTolerance;
+          })
         }
       }
 
       if (criteria) {
+        // if(attrs.data?.nodeType === NodeTypes.HOLDER){
+
+        // }
+        transactionsToAnalysis.forEach((transaction:any)=>{
+          const holderKey = transaction['CPF_CNPJ_TITULAR']
+          const odKey = transaction['CPF_CNPJ_OD']
+
+          if(!edgesSet[holderKey]){
+            edgesSet[holderKey] = [];
+          }
+
+          if(!edgesSet[holderKey].includes(odKey)){
+            edgesSet[holderKey].push(odKey)
+          }
+        })
+
         displayGraph.current.addNode(node, {
           ...attrs,
           data: {
@@ -401,7 +433,31 @@ function App() {
       // }
     });
 
-    fullGraph.current.forEachEdge((edge, attrs, source, target) => {
+    if(visualizationType === "od"){
+      displayGraph.current.clearEdges();
+
+
+      const holdersEdges = Object.entries(edgesSet);
+
+      holdersEdges.forEach((holderEdge:any)=>{
+        const [holder, oDs] = holderEdge;
+
+        oDs.forEach((od:any) =>{
+            if (
+              displayGraph.current.hasNode(holder) &&
+              displayGraph.current.hasNode(od) &&
+              holder !== od
+            ) {
+              displayGraph.current.addDirectedEdge(holder, od,{
+                color: "#adb5bd",
+                weight: 1,
+                type: "arrow",
+              })
+            }
+        })
+      })
+    }else{
+      fullGraph.current.forEachEdge((edge, attrs, source, target) => {
       if (
         displayGraph.current.hasNode(source) &&
         displayGraph.current.hasNode(target) &&
@@ -410,6 +466,9 @@ function App() {
         displayGraph.current.addDirectedEdge(source, target, attrs);
       }
     });
+    }
+
+    //add Clean Up Node with no Edges function
 
     // const degrees = displayGraph.current
     //   .nodes()
