@@ -20,12 +20,8 @@ import Graph from "graphology";
 import Sigma from "sigma";
 import { useEffect, useRef, useState } from "react";
 import forceAtlas2 from "graphology-layout-forceatlas2";
-import random from "graphology-layout/random";
 import circular from "graphology-layout/circular";
-import ReactSelect from "react-select";
-import FA2Layout from "graphology-layout-forceatlas2/worker";
 
-import noverlap from "graphology-layout-noverlap";
 import { MultiSelect } from "./components/ui/multi-select";
 import { isCpfOrCnpj } from "./helpers/isCpfOrCnpj";
 
@@ -42,11 +38,6 @@ function App() {
   const canvasRef = useRef(null);
 
   const [visualizationType, setVisualizationType] = useState("");
-  //201 - deposito online / generico
-  //205 - deposito dinheiro loterica
-  //214 - depositos especiais
-  //220 - deposito dinheiro terminal
-  const IVNOperations = ["201", "205", "214", "220"];
   const allOperations: any = [
     { value: "201", label: "201 - Deposito" },
     { value: "205", label: "205 - Deposito em dinheiro em loterica" },
@@ -83,7 +74,7 @@ function App() {
             moneyData = results.data;
             indexMainNodes(moneyData);
             generateMainGraph();
-            const renderer = new Sigma(displayGraph.current, canvasRef.current);
+            const renderer = new Sigma(displayGraph.current, canvasRef.current!);
             renderer.on("clickNode", (node) => {
               console.log("NODE", node);
               console.log(
@@ -108,21 +99,21 @@ function App() {
     // generateGraph();
   };
 
-  function getDestinatarioIndex(row: any) {
-    if (row["CPF_CNPJ_OD"] && row["CPF_CNPJ_OD"] !== "0") {
-      return row["CPF_CNPJ_OD"];
-    }
+  // function getDestinatarioIndex(row: any) {
+  //   if (row["CPF_CNPJ_OD"] && row["CPF_CNPJ_OD"] !== "0") {
+  //     return row["CPF_CNPJ_OD"];
+  //   }
 
-    if (row["NOME_PESSOA_OD"]) {
-      return row["NOME_PESSOA_OD"].replace(" ", "_");
-    }
+  //   if (row["NOME_PESSOA_OD"]) {
+  //     return row["NOME_PESSOA_OD"].replace(" ", "_");
+  //   }
 
-    if (isCpfOrCnpj(String(row["NUMERO_DOCUMENTO"]))) {
-      return String(row["NUMERO_DOCUMENTO"]);
-    }
+  //   if (isCpfOrCnpj(String(row["NUMERO_DOCUMENTO"]))) {
+  //     return String(row["NUMERO_DOCUMENTO"]);
+  //   }
 
-    return "ND";
-  }
+  //   return "ND";
+  // }
 
   function getCpfCnpjDestin(row: any) {
     if (row["CPF_CNPJ_OD"]) {
@@ -286,6 +277,7 @@ function App() {
             color: "#adb5bd",
             weight: 1,
             type: "arrow",
+            size: 2,
           });
         });
       }
@@ -316,6 +308,7 @@ function App() {
           fullGraph.current.addEdge(mainNodeIdx, transactionGraphKey, {
             color: "#adb5bd",
             weight: 1,
+            size: 2,
           });
         });
       }
@@ -452,12 +445,13 @@ function App() {
                 color: "#adb5bd",
                 weight: 1,
                 type: "arrow",
+                size: 2,
               })
             }
         })
       })
     }else{
-      fullGraph.current.forEachEdge((edge, attrs, source, target) => {
+      fullGraph.current.forEachEdge((_edge, attrs, source, target) => {
       if (
         displayGraph.current.hasNode(source) &&
         displayGraph.current.hasNode(target) &&
@@ -654,7 +648,7 @@ function App() {
           </div>
         </div>
 
-        <NodeModal node={clickedNode} />
+        <NodeModal node={clickedNode!} isModalOpen={open}/>
       </Dialog>
     </>
   );
