@@ -26,6 +26,7 @@ interface InodeModal {
     degreeCentrality?: number;
     betweennessCentrality?: number;
     closenessCentrality?: number;
+    constraint?: number;
     transactions: any[];
   };
   isModalOpen: boolean
@@ -39,6 +40,7 @@ export default function NodeModal({ node, isModalOpen }: InodeModal) {
   let degreeCentrality = 0;
   let betweennessCentrality = 0;
   let closenessCentrality = 0;
+  let constraint= 0;
   let transactions: any = [];
 
   if (node) {
@@ -49,6 +51,7 @@ export default function NodeModal({ node, isModalOpen }: InodeModal) {
     degreeCentrality = node.degreeCentrality || 0;
     betweennessCentrality = node.betweennessCentrality || 0;
     closenessCentrality = node.closenessCentrality || 0;
+    constraint = node.constraint || 0.
     transactions = node.transactions;
   }
 
@@ -228,6 +231,7 @@ export default function NodeModal({ node, isModalOpen }: InodeModal) {
           <p>Degree Centrality: {degreeCentrality?.toFixed(4)}</p>
           <p>Betweness Centrality: {betweennessCentrality?.toFixed(4)}</p>
           <p>Closeness Centrality: {closenessCentrality?.toFixed(4)}</p>
+          <p>Node constraint: {constraint?.toFixed(4)}</p>
         </div>
       </header>
       <div className="h-64 overflow-auto">
